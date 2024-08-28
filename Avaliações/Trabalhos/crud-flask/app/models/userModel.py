@@ -1,18 +1,10 @@
-from flask import jsonify
+from app.config.db import db 
 
-from config.logger import logger
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=False, nullable=False)
+    addresses = db.relationship('Address', back_populates='cliente')
 
-def getAllUsersModel(): # Retorna todos os usuários cadastrados
-    return
-
-def getUserModel(): # Retorna apenas o usuáriio especificado
-    return
-
-def createUserModel(req): # Cria um novo usuário
-    return
-
-def updateUserModel(req): #A Arualiza o usuário especificado
-    return
-
-def deleteUserModel(req): # Deleta o usuário especificado
-    return
+    def __repr__(self):
+        return f'<Client {self.name}>'
+    
