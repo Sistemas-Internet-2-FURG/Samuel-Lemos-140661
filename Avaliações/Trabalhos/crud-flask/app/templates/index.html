@@ -3,6 +3,8 @@
 
 {% block content %}
     <a href="{{ url_for('new_car') }}">Cadastrar Veículo</a>
+    <br>
+    <a href="{{ url_for('logout') }}">Logout</a>
     <ul>
         {% for car in cars %}
             <li>
