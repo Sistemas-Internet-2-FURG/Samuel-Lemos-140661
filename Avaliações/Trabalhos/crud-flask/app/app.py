@@ -1,14 +1,58 @@
-from flask import Flask, render_template, request, redirect, url_for
-from models import db, Car, CarType
+from flask import Flask, render_template, request, redirect, url_for, session
+from models import db, Car, CarType, User
 from config import Config
 from utils.logger import logger
+import os
+from dotenv import load_dotenv
 
-app = Flask(__name__)
+load_dotenv()
+
+app = Flask(__name__, template_folder='templates')
+#app.secret_key() = os.getenv("SECRET_KEY", "jgjgj43j44fg432432f3g")
 app.config.from_object(Config)
 db.init_app(app)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login(): #metodo para fazer login e autenticação do usuário
+    logger.info("Iniciando serviço de login.")
+
+    if request.method == 'POST':
+        name = request.form['name']
+        password = request.form['password']
+
+        user = User.query.filter_by(name=name).first()
+
+        if user and (user.password == password):
+            session['user_id'] = user.id
+            session['name'] = user.name
+            return redirect(url_for('index'))
+
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('name', None)
+    return redirect(url_for('login'))
+
+@app.route('/new_user', methods=['GET', 'POST'])
+def new_user():
+    logger.info("Iniciando serviço de cadastro de novo usuário.")
+    if request.method == 'POST':
+        name = request.form['name']
+        password = request.form['password']
+        new_user = User(name=name, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('index'))
+    
+    return render_template('new_user.html')
+
 @app.route('/')
-def index(): #página inicial que mostra todos os veículos cadastrados
+def index(): #página inicial que mostra todos os veículos cadastrados 
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
     cars = Car.query.all()
     car_types = CarType.query.all()
     return render_template('index.html', cars=cars, car_types=car_types)
