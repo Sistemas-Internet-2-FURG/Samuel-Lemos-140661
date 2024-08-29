@@ -2,13 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from models import db, Car, CarType, User
 from config import Config
 from utils.logger import logger
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__, template_folder='templates')
-#app.secret_key() = os.getenv("SECRET_KEY", "jgjgj43j44fg432432f3g")
 app.config.from_object(Config)
 db.init_app(app)
 
@@ -22,7 +17,7 @@ def login(): #metodo para fazer login e autenticação do usuário
 
         user = User.query.filter_by(name=name).first()
 
-        if user and (user.password == password):
+        if user and (user.password == password): #verifica se a senha digitada está correta
             session['user_id'] = user.id
             session['name'] = user.name
             return redirect(url_for('index'))
@@ -38,6 +33,7 @@ def logout():
 @app.route('/new_user', methods=['GET', 'POST'])
 def new_user():
     logger.info("Iniciando serviço de cadastro de novo usuário.")
+
     if request.method == 'POST':
         name = request.form['name']
         password = request.form['password']
@@ -50,10 +46,11 @@ def new_user():
 
 @app.route('/')
 def index(): #página inicial que mostra todos os veículos cadastrados 
-    if 'user_id' not in session:
+    if 'user_id' not in session: #se o usuário não está logado redireciona para a página de login
         return redirect(url_for('login'))
 
-    cars = Car.query.all()
+    user_id = session['user_id']
+    cars = Car.query.filter_by(user_id=user_id).all()
     car_types = CarType.query.all()
     return render_template('index.html', cars=cars, car_types=car_types)
 
@@ -67,7 +64,8 @@ def new_car(): #adiciona um novo veículo
         year = request.form['year']
         description = request.form['description']
         type_id = request.form['type_id']
-        new_car = Car(name=name, year=year, description=description, type_id=type_id)
+        user_id = session['user_id']
+        new_car = Car(name=name, year=year, description=description, type_id=type_id, user_id=user_id)
         db.session.add(new_car)
         db.session.commit()
         return redirect(url_for('index'))
@@ -78,6 +76,10 @@ def new_car(): #adiciona um novo veículo
 def edit_car(id): #edita o veículo com o id selecionado
     logger.info('Iniciando serviço de editar veículo.')
     
+    if car.user_id != session.get('user_id'): #verificar se o veículo pertence ao usuário logado
+        logger.warning(f"Usuário {session.get('user_id')} tentou editar um veículo que não é dele.")
+        return redirect(url_for('index'))
+
     car = Car.query.get_or_404(id)
     car_types = CarType.query.all()
     if request.method == 'POST':
@@ -94,6 +96,10 @@ def edit_car(id): #edita o veículo com o id selecionado
 def delete_car(id): #deleta o veículo com o id selecionado
     logger.info('Iniciando serviço de excluir veículo.')
     
+    if car.user_id != session.get('user_id'): #verificar se o veículo pertence ao usuário logado
+        logger.warning(f"Usuário {session.get('user_id')} tentou excluir um veículo que não é dele.")
+        return redirect(url_for('index'))
+
     car = Car.query.get_or_404(id)
     db.session.delete(car)
     db.session.commit()
