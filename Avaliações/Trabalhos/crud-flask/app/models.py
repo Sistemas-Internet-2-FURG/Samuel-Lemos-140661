@@ -15,3 +15,10 @@ class Car(db.Model):
     year = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(255))
     type_id = db.Column(db.Integer, db.ForeignKey('car_types.id'), nullable=False)
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(50), nullable=False)
+    
