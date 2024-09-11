@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from models import db, Car, CarType, User
 from config import Config
 from utils.logger import logger
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__, template_folder='templates')
 app.config.from_object(Config)
@@ -105,13 +107,14 @@ def delete_car(id): #deleta o veículo com o id selecionado
     db.session.commit()
     return redirect(url_for('index'))
 
+load_dotenv()
 if __name__ == '__main__':
     print('Server is running.')
     logger.info("Server is running.")
     with app.app_context():
         db.create_all()  # Cria as tabelas no banco de dados
     app.run(
-        port=5000,
-        host='127.0.0.1',
-        debug=True
+        port=os.getenv("PORT"),
+        host=os.getenv("HOST"),
+        debug=os.getenv("DEBUG")
         )
