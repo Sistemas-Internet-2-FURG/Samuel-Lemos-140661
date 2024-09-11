@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from models import db, Car, CarType, User
-from config import Config
-from utils.logger import logger
+from app.models import db, Car, CarType, User
+from app.config import Config
+from app.utils.logger import logger
 from dotenv import load_dotenv
 import os
 
@@ -77,10 +77,6 @@ def new_car(): #adiciona um novo veículo
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_car(id): #edita o veículo com o id selecionado
     logger.info('Iniciando serviço de editar veículo.')
-    
-    if car.user_id != session.get('user_id'): #verificar se o veículo pertence ao usuário logado
-        logger.warning(f"Usuário {session.get('user_id')} tentou editar um veículo que não é dele.")
-        return redirect(url_for('index'))
 
     car = Car.query.get_or_404(id)
     car_types = CarType.query.all()
@@ -97,10 +93,6 @@ def edit_car(id): #edita o veículo com o id selecionado
 @app.route('/delete/<int:id>')
 def delete_car(id): #deleta o veículo com o id selecionado
     logger.info('Iniciando serviço de excluir veículo.')
-    
-    if car.user_id != session.get('user_id'): #verificar se o veículo pertence ao usuário logado
-        logger.warning(f"Usuário {session.get('user_id')} tentou excluir um veículo que não é dele.")
-        return redirect(url_for('index'))
 
     car = Car.query.get_or_404(id)
     db.session.delete(car)
