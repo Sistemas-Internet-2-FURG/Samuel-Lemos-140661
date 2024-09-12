@@ -1,5 +1,7 @@
 ### Como rodar o projeto:
 
+Link da hospedagem da aplicação no render: https://crud-flask-smvp.onrender.com
+
 Primeiramente, na raiz do projeto crie um arquivo ".env" identico ao arquivo ".env.example" e no campo "DATABASE_URL" coloque seu endereço de conexão com o banco de dados remoto no formato: 
 
        postgresql+psycopg2://username:password@host:port/database
