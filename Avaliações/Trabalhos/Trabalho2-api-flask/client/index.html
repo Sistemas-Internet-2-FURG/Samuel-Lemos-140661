@@ -1,0 +1,22 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="{{ url_for('new_car') }}">Cadastrar Veículo</a>
+    <br>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <ul>
+        {% for car in cars %}
+            <li>
+                <strong>{{ car.name }}</strong>:
+                <a href="{{ url_for('edit_car', id=car.id) }}">Editar</a>
+                <a href="{{ url_for('delete_car', id=car.id) }}">Deletar</a>
+                <br>
+                <p>Ano de Fabricação: {{ car.year }}</p>
+                <p>Tipo: {{ car.car_type.name }}</p>
+                <p>Descrição: {{ car.description }}</p>
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% endblock %}
