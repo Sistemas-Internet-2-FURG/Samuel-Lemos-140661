@@ -98,6 +98,7 @@ def new_car(): #adiciona um novo veículo
     }), 201
 
 @app.route('/edit/<int:id>', methods=['POST'])
+@jwt_required()
 def edit_car(id): #edita o veículo com o id selecionado
     logger.info('Iniciando serviço de editar veículo.')
 
@@ -117,6 +118,7 @@ def edit_car(id): #edita o veículo com o id selecionado
     }), 200
 
 @app.route('/delete/<int:id>')
+@jwt_required()
 def delete_car(id): #deleta o veículo com o id selecionado
     logger.info('Iniciando serviço de excluir veículo.')
 
