@@ -9,6 +9,7 @@ import os
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
+jwt = JWTManager(app)
 
 @app.route('/login', methods=['POST'])
 def login(): #metodo para fazer login e autenticação do usuário
@@ -20,7 +21,7 @@ def login(): #metodo para fazer login e autenticação do usuário
 
     user = User.query.filter_by(name=name).first()
 
-    if not user or not user.check_password(password=password):
+    if not user or user.password != password:
         return jsonify({"message": "Credenciais inválidas!"}), 401
 
     token = create_access_token(identity=user.id)
@@ -37,8 +38,7 @@ def register():
     data = request.get_json()
     name = data.get("name")
     password = data.get("password")
-    new_user = User(name=name)
-    new_user.set_password(password=password)
+    new_user = User(name=name, password=password)
     db.session.add(new_user)
     db.session.commit()
 
