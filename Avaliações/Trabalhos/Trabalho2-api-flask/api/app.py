@@ -102,8 +102,12 @@ def new_car(): #adiciona um novo veículo
 def edit_car(id): #edita o veículo com o id selecionado
     logger.info('Iniciando serviço de editar veículo.')
 
+    user_id = get_jwt_identity()
     car = Car.query.get_or_404(id)
 
+    if car.user_id != user_id:
+        return jsonify({"message": "Veículo não pertence a este usuário!"}), 401
+    
     data = request.get_json()
     car.name = data.get("name")
     car.year = data.get("year")
