@@ -42,6 +42,9 @@ def register():
     db.session.add(new_user)
     db.session.commit()
 
+    if User.query.filter_by(name=name).first():
+        return jsonify({"message": "Usuário já existe!"}), 400
+
     return jsonify({
         "message": "Usuário cadastrado com sucesso.",
         "user_id": new_user.id,
