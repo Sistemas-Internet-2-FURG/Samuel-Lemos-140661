@@ -1,15 +1,17 @@
-from flask import Flask, request, session, jsonify
+from flask import Flask, request, jsonify
 from api.models import db, Car, CarType, User
 from api.config import Config
 from api.utils.logger import logger
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 jwt = JWTManager(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/login', methods=['POST'])
 def login(): #metodo para fazer login e autenticação do usuário
@@ -38,12 +40,13 @@ def register():
     data = request.get_json()
     name = data.get("name")
     password = data.get("password")
+    
+    if User.query.filter_by(name=name).first():
+        return jsonify({"message": "Usuário já existe!"}), 400
+    
     new_user = User(name=name, password=password)
     db.session.add(new_user)
     db.session.commit()
-
-    if User.query.filter_by(name=name).first():
-        return jsonify({"message": "Usuário já existe!"}), 400
 
     return jsonify({
         "message": "Usuário cadastrado com sucesso.",
@@ -74,6 +77,45 @@ def index(): #página inicial que mostra todos os veículos cadastrados
         "cars": cars_response
     }), 200
 
+@app.route('/getTypes', methods=['GET'])
+@jwt_required()
+def get_types():
+    logger.info('Iniciando serviço de buscar tipos de carros.')
+
+    car_types = CarType.query.all()
+
+    car_types_response = []
+    for car_type in car_types:
+        car_types_response.append({
+            "id": car_type.id,
+            "name": car_type.name
+        })
+
+    return jsonify({
+        "car_types": car_types_response
+    }), 200
+
+@app.route('/getCarById/<int:id>', methods=['GET'])
+@jwt_required()
+def get_car_by_id():
+    logger.info('Iniciando serviço de buscar carro pelo id.')
+
+    car = Car.query.get_or_404(id)
+    if not car:
+        return jsonify({"message": "Veículo não encontrado."}), 404
+
+    car_dict = {
+            "id": car.id,
+            "name": car.name,
+            "year": car.year,
+            "description": car.description,
+            "type_id": car.type_id,
+            "type_name": car.car_type.name,
+            "user_id": car.user_id
+        }
+    
+    return car_dict, 200
+    
 @app.route('/new', methods=['POST'])
 @jwt_required()
 def new_car(): #adiciona um novo veículo
