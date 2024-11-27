@@ -1,27 +1,23 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <h2>Editar Veículo</h2>
-    <form method="POST">
-        <label for="name">Nome</label>
-        <input type="text" id="name" name="name" value="{{ car.name }}" required>
-
-        <label for="year">Ano de Fabricação:</label>
-        <input type="number" id="year" name="year" value="{{ car.year }}" required>
-
-        <label for="description">Descrição</label>
-        <input type="text" id="description" name="description" value="{{ car.description }}">
-
-        <label for="type_id">Tipo</label>
-        <select id="type_id" name="type_id" required>
-            {% for car_type in car_types %}
-                <option value="{{ car_type.id }}" {% if car_type.id == car.type_id %}selected{% endif %}>
-                    {{ car_type.name }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <button type="submit">Salvar</button>
-    </form>
-    <a href="{{ url_for('index') }}">Voltar</a>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Carro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Carro</h1>
+        <form id="edit-car-form">
+            <input type="text" id="car-name" placeholder="Nome do Carro" required>
+            <input type="text" id="car-year" placeholder="Ano" required>
+            <input type="text" id="car-description" placeholder="Descrição">
+            <button type="submit">Salvar Alterações</button>
+        </form>
+        <a href="dashboard.html">Voltar</a>
+    </div>
+    <script src="scripts/cars.js"></script>
+    <script src="scripts/edit_car.js"></script>
+</body>
+</html>
