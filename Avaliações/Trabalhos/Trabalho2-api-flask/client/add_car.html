@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Carro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Adicionar Carro</h1>
+        <form id="add-car-form">
+            <input type="text" id="car-name" placeholder="Nome do Carro" required>
+            <input type="text" id="car-year" placeholder="Ano" required>
+            <input type="text" id="car-description" placeholder="Descrição">
+            <select id="car-type-id" required>
+                <option value="" disabled selected>Selecione o tipo do carro</option>
+            </select>
+            <button type="submit">Adicionar Carro</button>
+        </form>
+        <a href="dashboard.html">Voltar</a>
+    </div>
+    <script src="scripts/cars.js"></script>
+    <script src="scripts/get_car_types.js"></script>
+</body>
+</html>
