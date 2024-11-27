@@ -97,7 +97,7 @@ def get_types():
 
 @app.route('/getCarById/<int:id>', methods=['GET'])
 @jwt_required()
-def get_car_by_id():
+def get_car_by_id(id):
     logger.info('Iniciando serviço de buscar carro pelo id.')
 
     car = Car.query.get_or_404(id)
@@ -154,7 +154,7 @@ def edit_car(id): #edita o veículo com o id selecionado
     car.name = data.get("name")
     car.year = data.get("year")
     car.description = data.get("description")
-    car.type_id = data.get("type_id")
+    #car.type_id = data.get("type_id")
     db.session.commit()
 
     return jsonify({
